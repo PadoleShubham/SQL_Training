@@ -68,3 +68,15 @@ insert into Hotel values(1,'Raj');
  create table orderItemDetails(orderid int,itemid int,qty int,primary key(orderid,itemid),
  foreign key(orderid) references orderDeatils(orderid),
  foreign key(itemid) references item(itemid));
+
+ create table thinkemp(empid int primary key,ename varchar(20) not null, salary int, mrgid int);
+
+ alter table thinkemp add constraint fkmgid foreign key(mrgid) references thinkemp(empid);
+
+--return EmpName with Manager
+ select e1.ename 'EmpName',e2.ename 'Manager' from thinkemp e1 inner join thinkemp e2 on e1.mrgid=e2.empid; 
+
+ --return whom manger handle greter than 2 employee
+ select m.ename,count(*) from thinkemp e inner join thinkemp m on e.mrgid=m.empid group by m.ename having count(*)>=2;
+
+ select * from thinkemp;
