@@ -80,3 +80,45 @@ insert into Hotel values(1,'Raj');
  select m.ename,count(*) from thinkemp e inner join thinkemp m on e.mrgid=m.empid group by m.ename having count(*)>=2;
 
  select * from thinkemp;
+
+ create table em(eid int primary key identity(101,1),ename varchar(20) not null, mobile bigint);
+ insert into em (ename,mobile) values('Ajinkya',98765432),('Vaibhav',9865288);
+
+ select * from em;
+
+ create unique nonclustered index idx on em(mobile);
+
+ insert into em(ename) values('sapna');
+
+ create view vktemp as select empid,ename from thinkemp;
+
+  select * from thinkemp;
+  insert into vktemp values(9,'Sonali');
+  delete from vktemp where empid=3;
+
+  --complex
+  create view v2 as select batchid,count(*) as count from stud group bybatchid;
+
+  select * from vk2;
+
+  create view vk3 as select sname,b.batchid,bname from stud s inner join batch b on s.batchid=b.batchid;
+
+
+  --commit and rollback 
+  begin try
+	begin tran
+	insert into em values('Rajesh',98765431);
+	insert into em values('shyam',9867542);
+	commit tran;
+ end try
+ begin catch
+	select ERROR_MESSAGE();
+	rollback tran;
+end catch;
+	
+select * from em;
+
+truncate table em;
+
+delete em where eid=101;
+delete em where eid=102;

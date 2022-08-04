@@ -12,3 +12,5 @@ insert into employee values(6,'aka','Sales');
 select*from employee;
 
 
+
+
