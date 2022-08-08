@@ -85,23 +85,89 @@ create table Service_Request(Service_Id int primary key,service_desc varchar(20)
  pin_code int);
 
  --add forein key
- alter table Service_Request add foreign key(cust_id) references Customer(cust_id);
- alter table Service_Request add foreign key(Emp_id) references Employee(Emp_id);
- alter table Service_Request add foreign key(status_id) references Service_Status(status_id);
+	 alter table Service_Request add foreign key(cust_id) references Customer(cust_id);
+	 alter table Service_Request add foreign key(Emp_id) references Employee(Emp_id);
+	 alter table Service_Request add foreign key(status_id) references Service_Status(status_id);
 
  --2.Write a query to add column totalRequests (integer) to customer table 
- alter table Customer add totalRequests int;
+	alter table Customer add totalRequests int;
 
  --3.Write single query to create ReqCopy table which will have same structure and data of service_request table.
 
- select * into ReqCopy from Service_Request;
-
-  select * from Employee; 
-
+	select * into ReqCopy from Service_Request;
+ 
   --4.Show customer name, service description, charges	of requests served by employees older than age 30. (make use of sub query)
 
-  select cname from Customer where service_desc in (select service_desc,charges from Service_Request where age=(select age from Employee where age<30));
+	 select cname from Customer where Cust_Id in (select Cust_Id from Service_Request where Emp_id in(select age from Employee where age<30));
 
   --5.	Write a query to select customer names for whom employee ‘John’ has not served any request.(make use of sub query)
-  select cname from Customer where cust_id not in(select cust_id from Service_Request where Emp_id=(select Emp_id from Employee where ename='john'));
+	select cname from Customer where cust_id not in(select cust_id from Service_Request where Emp_id=(select Emp_id from Employee where ename='john'));
   
+  select * from Service_Status;
+  
+  --6.Show employee name, total charges of all the requests served by that employee. Consider only ‘closed’ requests.
+  select ename from employee where ename in(select ename from Service_Status where desc_are in(select desc_are from Service_Status where desc_are='Closed'));
+  
+ 
+  --9.Delete all cancelled requests from request table.
+  delete Service_Request where status_id in(select status_id from Service_Status where desc_are='closed');
+
+
+
+
+
+  
+ 
+
+  --1.Write a query to create Student and Score table.
+  create table Statuss(statusid int primary key,descvalue int not null, descare varchar(20));
+
+  create table Students(studid int primary key,sname varchar(20) not null,mobile bigint,batchid int,statusid int foreign key REFERENCES Statuss(statusid),yearofpass date);
+  
+  create table Score(studid int,testdate date,topic varchar(20),marksobtained int);
+
+  create table Attendence(studid int foreign key REFERENCES Students(studid),adate date,present varchar(10) not null);
+  
+  create table Batch(batchid int primary key,bname varchar(20) not null,teacherid int );
+
+  create table Teacher(teacherid int primary key,tname varchar(20) not null);
+
+  --2.Write a query to add column Qualification to Student table. ( Assume it was not present earlier)– add qualification column after status id
+
+  alter table Students add qualification varchar(10);
+
+  --3.Write single query to create StudentCopy table which will have same structure and data of table.
+  select * into StudentCopy from Students;
+
+  --4.List all studentsname from july2018 who were absent for test on 18Aug2018.
+  select sname from Students s inner join Batch b on s.batchid=b.batchid inner join Attendence a on a.studid=s.studid where adate='18-aug-2018' and present='No';
+
+ -- 5.	Update record of student Mithilesh from July2018 batch to Aug2018.Batch id of both batches is not known.
+  update Students set banme=Aug2018 inner join Batch on where bname=null;
+
+  --7.	List all Students from July2018 whose qualification is “BE” and year of passing is 2018.
+  select * from Students s  inner join Batch b on s.batchid=b.batchid where yearofpass=2018;
+
+  --8.List student name ,topic and topic wise marks of each student from July2018 batch.
+  select sname from Students s inner join Score c on s.studid=c.studid inner join Batch b  on s.batchid=b.batchid where bname='july2018';
+
+  --9.	Display batchname and Batchwise Placed student count for all batches from which less than 5 students are placed.
+  select bname,count(*) from Batch group by batchid having count(*)<=5;
+
+  --10.	Display top 3 students from july2018 batch with least attendance.
+  select top(3) from Students where studid=(select studid from Batch  where bname=2018);
+
+  --11.	Delete all records of those students from attendance who are ‘PLACED’
+  delete Students 
+
+  --12.	Delete all records of students whose average marks are less than 50.
+  delete Students where studid=(select studid from Score where marksobtained<=50);
+
+  --13.	Create a view to which shows sid name batchname. 
+  Create View vk as select studid,sname from Students s inner join Batch b on s.batchid=b.batchid;
+  
+  --14.	Create index so that retrieval of records is faster when retrieved based on status id
+  create index idxs on Statuss(statusid);
+
+  --15.	Give one example of left outer join using above database.
+  select sname from Students s left join Batch b on s.batchid=b.batchid;
